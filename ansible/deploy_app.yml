@@ -1,0 +1,131 @@
+---
+- name: Setup vote and result containers on public instance
+  hosts: public
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull vote image
+      docker_image:
+        name: rajdoc111/raj-vote
+        tag: v1.0
+        source: pull
+
+    - name: Pull result image
+      docker_image:
+        name: rajdoc111/raj-result
+        tag: v1.0
+        source: pull
+
+    - name: Run vote container
+      docker_container:
+        name: vote
+        image: rajdoc111/raj-result:v1.0
+        ports:
+          - "8080:80"
+        env:
+          REDIS_HOST: "10.0.2.235"
+        state: started
+        restart_policy: always
+
+    - name: Run result container
+      docker_container:
+        name: result
+        image: rajdoc111/raj-result:v1.0
+        ports:
+          - "8081:80"
+        env:
+          DB_HOST: "10.0.2.234"
+          DB_PASSWORD: "postgres"
+        state: started
+        restart_policy: always
+
+- name: Setup worker and redis on private instance
+  hosts: worker_redis
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull worker image
+      docker_image:
+        name: rajdoc111/raj-worker:v1.0
+        tag: v1.0
+        source: pull
+
+    - name: Pull redis image
+      docker_image:
+        name: redis
+        source: pull
+
+    - name: Run redis container
+      docker_container:
+        name: redis
+        image: redis
+        ports:
+          - "6379:6379"
+        state: started
+        restart_policy: always
+
+    - name: Run worker container
+      docker_container:
+        name: worker
+        image: rajdoc111/raj-worker:v1.0
+        state: started
+        env:
+          REDIS_HOST: "redis"
+          DB_HOST: "10.0.2.234"
+          DB_PASSWORD: "postgres"
+        restart_policy: always
+
+- name: Setup postgres on private db instance
+  hosts: postgres
+  become: yes
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+        update_cache: yes
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull postgres image
+      docker_image:
+        name: postgres
+        source: pull
+
+    - name: Run postgres container
+      docker_container:
+        name: postgres
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - "5432:5432"
+        state: started
+        restart_policy: always
