@@ -45,6 +45,7 @@ resource "aws_subnet" "private" {
   availability_zone = "ap-southeast-1b"
   tags = { Name = "private-subnet" }
 }
+
 # Private route table (no NAT, only local traffic)
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
@@ -55,6 +56,29 @@ resource "aws_route_table_association" "private_assoc" {
   subnet_id      = aws_subnet.private.id
   route_table_id = aws_route_table.private.id
 }
+
+# --- Elastic IP for NAT Gateway ---
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+# --- NAT Gateway ---
+resource "aws_nat_gateway" "nat_gw" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.public.id
+  depends_on    = [aws_internet_gateway.gw]
+  tags = {
+    Name = "nat-gateway"
+  }
+}
+
+# --- Update Private Route Table to use NAT Gateway ---
+resource "aws_route" "private_nat_route" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat_gw.id
+}
+
 
 # Security group for Bastion host
 resource "aws_security_group" "bastion_sg" {
