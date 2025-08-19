@@ -66,7 +66,7 @@ resource "aws_security_group" "bastion_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["79.221.193.190/32"] # Replace with your IP
+    cidr_blocks = ["0.0.0.0/0"] # Replace with your IP
   }
 
   egress {
@@ -138,7 +138,7 @@ resource "aws_security_group" "private_sg" {
 }
 
 resource "aws_security_group" "postgres_sg" {
-  name   = "postgres_sg-sg"
+  name   = "postgres_sg"
   vpc_id = aws_vpc.main.id
 
   # SSH from Bastion only
@@ -154,8 +154,7 @@ resource "aws_security_group" "postgres_sg" {
     to_port         = 5432
     protocol        = "tcp"
     security_groups = [
-      aws_security_group.public_sg.id, # public instance
-      aws_security_group.private_sg.id # self (worker container)
+      aws_security_group.private_sg.id, # private instance
     ]
   }
 
