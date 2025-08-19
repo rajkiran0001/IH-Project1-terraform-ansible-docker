@@ -30,7 +30,7 @@
     - name: Run vote container
       docker_container:
         name: vote
-        image: rajdoc111/raj-result:v1.0
+        image: rajdoc111/raj-vote:v1.0
         ports:
           - "8080:80"
         env:
@@ -68,7 +68,7 @@
 
     - name: Pull worker image
       docker_image:
-        name: rajdoc111/raj-worker:v1.0
+        name: rajdoc111/raj-worker
         tag: v1.0
         source: pull
 
