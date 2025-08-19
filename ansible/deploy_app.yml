@@ -1,6 +1,6 @@
 ---
-- name: Setup vote and result containers on public instance
-  hosts: public
+- name: Setup postgres on private db instance
+  hosts: postgres
   become: yes
   tasks:
     - name: Install Docker
@@ -15,58 +15,25 @@
         state: started
         enabled: yes
 
-    - name: Pull vote image
+    - name: Pull postgres image
       docker_image:
-        name: rajdoc111/raj-two-vote:latest
+        name: postgres
         source: pull
 
-    - name: Pull result image
-      docker_image:
-        name: rajdoc111/raj-two-result:latest
-        source: pull
-
-    - name: Remove old vote container if exists
+    - name: Remove old postgres container if exists
       docker_container:
-        name: vote
+        name: postgres
         state: absent
 
-    - name: Remove old result container if exists
+    - name: Run postgres container
       docker_container:
-        name: result
-        state: absent
-
-    - name: Run vote container
-      docker_container:
-        name: vote
-        image: rajdoc111/raj-two-vote:latest
+        name: postgres
+        image: postgres
         ports:
-          - "8080:80"
+          - "5432:5432"
         env:
-          REDIS_HOST: "10.0.2.235"
-          REDIS_PORT: "6379"
-          PG_HOST: "10.0.2.234" 
-          PG_PORT: "5432" 
-          PG_USER: "postgres" 
-          PG_PASSWORD: "postgres" 
-          PG_DATABASE: "postgres"
-        state: started
-        restart_policy: always
-    
-    - name: Run result container
-      docker_container:
-        name: result
-        image: rajdoc111/raj-two-result:latest
-        ports:
-          - "8081:80"
-        env:
-          REDIS_HOST: "10.0.2.235"
-          REDIS_PORT: "6379"        
-          PG_HOST: "10.0.2.234" 
-          PG_PORT: "5432" 
-          PG_USER: "postgres" 
-          PG_PASSWORD: "postgres" 
-          PG_DATABASE: "postgres"  
-
+          POSTGRES_USER: "postgres"
+          POSTGRES_PASSWORD: "postgres"
         state: started
         restart_policy: always
 
@@ -112,6 +79,12 @@
         image: redis
         ports:
           - "6379:6379"
+        env:
+          PG_HOST: "10.0.2.234" 
+          PG_PORT: "5432" 
+          PG_USER: "postgres" 
+          PG_PASSWORD: "postgres" 
+          PG_DATABASE: "postgres"        
         state: started
         restart_policy: always
 
@@ -120,7 +93,7 @@
         name: worker
         image: rajdoc111/raj-two-worker:latest
         env:
-          REDIS_HOST: "redis"
+          REDIS_HOST: "10.0.2.235"
           REDIS_PORT: "6379"
           DB_HOST: "10.0.2.234"
           DB_PORT: "5432"
@@ -128,10 +101,10 @@
           DB_PASSWORD: "postgres"
           DB_NAME: "postgres"
         state: started
-        restart_policy: always
+        restart_policy: always     
 
-- name: Setup postgres on private db instance
-  hosts: postgres
+- name: Setup vote and result containers on public instance
+  hosts: public
   become: yes
   tasks:
     - name: Install Docker
@@ -146,24 +119,60 @@
         state: started
         enabled: yes
 
-    - name: Pull postgres image
+    - name: Pull vote image
       docker_image:
-        name: postgres
+        name: rajdoc111/raj-two-vote:latest
         source: pull
 
-    - name: Remove old postgres container if exists
+    - name: Pull result image
+      docker_image:
+        name: rajdoc111/raj-two-result:latest
+        source: pull
+
+    - name: Remove old vote container if exists
       docker_container:
-        name: postgres
+        name: vote
         state: absent
 
-    - name: Run postgres container
+    - name: Remove old result container if exists
       docker_container:
-        name: postgres
-        image: postgres
-        env:
-          POSTGRES_USER: "postgres"
-          POSTGRES_PASSWORD: "postgres"
+        name: result
+        state: absent
+
+    - name: Run vote container
+      docker_container:
+        name: vote
+        image: rajdoc111/raj-two-vote:latest
         ports:
-          - "5432:5432"
+          - "8080:80"
+        env:
+          REDIS_HOST: "10.0.2.235"
+          REDIS_PORT: "6379"
+          FLASK_ENV: "development"
+          PG_HOST: "10.0.2.234" 
+          PG_PORT: "5432" 
+          PG_USER: "postgres" 
+          PG_PASSWORD: "postgres" 
+          PG_DATABASE: "postgres"           
         state: started
         restart_policy: always
+    
+    - name: Run result container
+      docker_container:
+        name: result
+        image: rajdoc111/raj-two-result:latest
+        ports:
+          - "8081:80"
+        env:
+          REDIS_HOST: "10.0.2.235"
+          REDIS_PORT: "6379"        
+          PG_HOST: "10.0.2.234" 
+          PG_PORT: "5432" 
+          PG_USER: "postgres" 
+          PG_PASSWORD: "postgres" 
+          PG_DATABASE: "postgres"  
+
+        state: started
+        restart_policy: always
+
+
