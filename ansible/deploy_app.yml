@@ -38,7 +38,7 @@
         restart_policy: always
 
 - name: Setup worker and redis on private instance
-  hosts: worker_redis
+  hosts: backend
   become: yes
   tasks:
     - name: Install Docker
@@ -78,13 +78,7 @@
         name: redis
         image: redis
         ports:
-          - "6379:6379"
-        env:
-          PG_HOST: "10.0.2.234" 
-          PG_PORT: "5432" 
-          PG_USER: "postgres" 
-          PG_PASSWORD: "postgres" 
-          PG_DATABASE: "postgres"        
+          - "6379:6379"     
         state: started
         restart_policy: always
 
@@ -148,12 +142,7 @@
         env:
           REDIS_HOST: "10.0.2.235"
           REDIS_PORT: "6379"
-          FLASK_ENV: "development"
-          PG_HOST: "10.0.2.234" 
-          PG_PORT: "5432" 
-          PG_USER: "postgres" 
-          PG_PASSWORD: "postgres" 
-          PG_DATABASE: "postgres"           
+          FLASK_ENV: "development"         
         state: started
         restart_policy: always
     
@@ -163,9 +152,7 @@
         image: rajdoc111/raj-two-result:latest
         ports:
           - "8081:80"
-        env:
-          REDIS_HOST: "10.0.2.235"
-          REDIS_PORT: "6379"        
+        env:  
           PG_HOST: "10.0.2.234" 
           PG_PORT: "5432" 
           PG_USER: "postgres" 
