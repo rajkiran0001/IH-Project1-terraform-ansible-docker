@@ -115,11 +115,26 @@ resource "aws_security_group" "public_sg" {
 
   # HTTP from anywhere
   ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 8080
+    to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    from_port   = 8081
+    to_port     = 8081
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+  from_port   = -1
+  to_port     = -1
+  protocol    = "icmp"
+  cidr_blocks = ["0.0.0.0/0"]
+ }
+
 
   egress {
     from_port   = 0
@@ -146,10 +161,7 @@ resource "aws_security_group" "private_sg" {
     from_port       = 6379
     to_port         = 6379
     protocol        = "tcp"
-    security_groups = [
-      aws_security_group.public_sg.id, # public instance
-    ]
-     self      = true  # FOR WORKER ITSELF allows traffic from instances in the same SG
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Egress:  Egress from private instance does not need to specify the public instance — the TCP reply traffic is automatically allowed by AWS stateful security groups.
@@ -162,7 +174,7 @@ resource "aws_security_group" "private_sg" {
 }
 
 resource "aws_security_group" "postgres_sg" {
-  name   = "postgres_sg-sg"
+  name   = "postgres_sg"
   vpc_id = aws_vpc.main.id
 
   # SSH from Bastion only
@@ -177,10 +189,7 @@ resource "aws_security_group" "postgres_sg" {
     from_port       = 5432
     to_port         = 5432
     protocol        = "tcp"
-    security_groups = [
-      aws_security_group.public_sg.id, # public instance
-      aws_security_group.private_sg.id # self (worker container)
-    ]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Egress: outgoing is allowing port 5432 for public and private instances
@@ -221,7 +230,7 @@ resource "aws_instance" "private_instance_postgres" {
   ami                         = "ami-02c7683e4ca3ebf58"
   instance_type               = "t2.micro"
   subnet_id                   = aws_subnet.private.id
-  vpc_security_group_ids      = [aws_security_group.private_sg.id]
+  vpc_security_group_ids      = [aws_security_group.postgres_sg.id]
   associate_public_ip_address = false
   key_name                    = "second-key-asia"
   tags = { Name = "PrivateInstance-postgress" }
