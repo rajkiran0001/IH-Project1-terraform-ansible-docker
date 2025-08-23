@@ -5,8 +5,7 @@ open ports correctly
 ssh into docker
 docker logs container name
 
- 
- 
+
  terraform validate (To validate the code)
  terraform plan (To see the plan what is going to happen in the aws when you apply)
  terraform apply (Go to apply in the aws in real time)
