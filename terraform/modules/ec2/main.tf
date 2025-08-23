@@ -20,7 +20,7 @@ resource "aws_instance" "public_instance_vote_result" {
   associate_public_ip_address = true
   key_name                    = var.key_name
   tags = { 
-    Name = "${var.env}-PublicInstance-vote-result" 
+    Name = "${var.env}-PublicInstance-voteApp-Fe" 
     Environment = var.env 
   }
 }
@@ -34,7 +34,7 @@ resource "aws_instance" "private_instance_postgres" {
   associate_public_ip_address = false
   key_name                    = var.key_name
   tags = { 
-    Name = "${var.env}-PrivateInstance-postgress" 
+    Name = "${var.env}-PrivateInstance-voteApp-db" 
     Environment = var.env 
   }
 }
@@ -48,7 +48,7 @@ resource "aws_instance" "private_instance_worker_redis" {
   associate_public_ip_address = false
   key_name                    = var.key_name
   tags = { 
-    Name = "${var.env}-PrivateInstance-worker redis" 
+    Name = "${var.env}-PrivateInstance-voteApp-backend" 
     Environment = var.env 
   }
 }
