@@ -52,5 +52,3 @@ resource "aws_instance" "private_instance_worker_redis" {
     Environment = var.env 
   }
 }
-
-
