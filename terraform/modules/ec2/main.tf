@@ -19,7 +19,10 @@ resource "aws_instance" "public_instance_vote_result" {
   vpc_security_group_ids      = [var.public_sg_id]
   associate_public_ip_address = true
   key_name                    = var.key_name
-  tags = { Name = "PublicInstance-vote-result" }
+  tags = { 
+    Name = "${var.env}-PublicInstance-vote-result" 
+    Environment = var.env 
+  }
 }
 # --- one private Instance postgres---
 
@@ -30,7 +33,10 @@ resource "aws_instance" "private_instance_postgres" {
   vpc_security_group_ids      = [var.postgres_sg_id]
   associate_public_ip_address = false
   key_name                    = var.key_name
-  tags = { Name = "PrivateInstance-postgress" }
+  tags = { 
+    Name = "${var.env}-PrivateInstance-postgress" 
+    Environment = var.env 
+  }
 }
 
 # --- Two Private Instances  worker redis---
@@ -41,7 +47,10 @@ resource "aws_instance" "private_instance_worker_redis" {
   vpc_security_group_ids      = [var.private_sg_id]
   associate_public_ip_address = false
   key_name                    = var.key_name
-  tags = { Name = "PrivateInstance-worker redis" }
+  tags = { 
+    Name = "${var.env}-PrivateInstance-worker redis" 
+    Environment = var.env 
+  }
 }
 
 

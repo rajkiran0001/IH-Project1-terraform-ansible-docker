@@ -12,4 +12,5 @@ docker logs container name
  The files outside the module (main.tf, provider.tf) are globlly available
 
  Ansible
+ you need to check the environmental variable after the terraform creates the resources
  ansible-playbook -i inventory.ini deploy_app.yml
