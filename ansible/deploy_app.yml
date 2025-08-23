@@ -80,7 +80,7 @@
         ports:
           - "6379:6379"
         env:
-          PG_HOST: "10.0.2.234" 
+          PG_HOST: "10.0.2.95" 
           PG_PORT: "5432" 
           PG_USER: "postgres" 
           PG_PASSWORD: "postgres" 
@@ -93,9 +93,9 @@
         name: worker
         image: rajdoc111/raj-two-worker:latest
         env:
-          REDIS_HOST: "10.0.2.235"
+          REDIS_HOST: "10.0.2.121"
           REDIS_PORT: "6379"
-          DB_HOST: "10.0.2.234"
+          DB_HOST: "10.0.2.95"
           DB_PORT: "5432"
           DB_USERNAME: "postgres"
           DB_PASSWORD: "postgres"
@@ -146,10 +146,10 @@
         ports:
           - "8080:80"
         env:
-          REDIS_HOST: "10.0.2.235"
+          REDIS_HOST: "10.0.2.121"
           REDIS_PORT: "6379"
           FLASK_ENV: "development"
-          PG_HOST: "10.0.2.234" 
+          PG_HOST: "10.0.2.95" 
           PG_PORT: "5432" 
           PG_USER: "postgres" 
           PG_PASSWORD: "postgres" 
@@ -164,9 +164,9 @@
         ports:
           - "8081:80"
         env:
-          REDIS_HOST: "10.0.2.235"
+          REDIS_HOST: "10.0.2.121"
           REDIS_PORT: "6379"        
-          PG_HOST: "10.0.2.234" 
+          PG_HOST: "10.0.2.95" 
           PG_PORT: "5432" 
           PG_USER: "postgres" 
           PG_PASSWORD: "postgres" 
