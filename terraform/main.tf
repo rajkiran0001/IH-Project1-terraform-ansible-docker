@@ -35,3 +35,4 @@ module "ec2" {
   private_sg_id     = module.security_groups.private_sg_id
   postgres_sg_id    = module.security_groups.postgres_sg_id
 }
+
