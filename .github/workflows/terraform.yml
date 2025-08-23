@@ -28,17 +28,25 @@ jobs:
 
       # Init Terraform
       - name: Terraform Init
-        run: terraform init -backend-config="key=env/dev/terraform.tfstate"
+        run: |
+          cd env/dev
+          terraform init -backend-config="key=env/dev/terraform.tfstate"
 
       # Validate syntax
       - name: Terraform Validate
-        run: terraform validate
+        run: |
+          cd env/dev      
+          terraform validate
 
       # Plan changes
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: |
+          cd env/dev
+          terraform plan -out=tfplan
 
       # Auto-apply changes (careful!)
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve tfplan
+        run: |
+          cd env/dev
+          terraform apply -auto-approve tfplan
