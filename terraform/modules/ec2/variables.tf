@@ -6,3 +6,7 @@ variable "bastion_sg_id" {}
 variable "public_sg_id" {}
 variable "private_sg_id" {}
 variable "postgres_sg_id" {}
+variable "env" {
+    description = "Environment name"
+    type = string
+}
