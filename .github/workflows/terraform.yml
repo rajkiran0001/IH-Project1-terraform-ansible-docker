@@ -3,7 +3,7 @@ name: Terraform CI/CD
 on:
   push:
     branches:
-      - main   # or your deployment branch
+      - developement   # or your deployment branch
 
 jobs:
   terraform:
@@ -29,24 +29,24 @@ jobs:
       # Init Terraform
       - name: Terraform Init
         run: |
-          cd env/prod
-          terraform init -backend-config="key=env/prod/terraform.tfstate"
+          cd env/dev
+          terraform init -backend-config="key=env/dev/terraform.tfstate"
 
       # Validate syntax
       - name: Terraform Validate
         run: |
-          cd env/prod      
+          cd env/dev      
           terraform validate
 
       # Plan changes
       - name: Terraform Plan
         run: |
-          cd env/prod
+          cd env/dev
           terraform plan -out=tfplan
 
       # Auto-apply changes (careful!)
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         run: |
-          cd env/prod
+          cd env/dev
           terraform apply -auto-approve tfplan
